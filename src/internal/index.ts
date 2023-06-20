@@ -1,7 +1,7 @@
-import { TokenGetter } from "../authorization";
-import { ApiURL, ApiVersion } from "./constants";
 import axios, { AxiosError } from "axios";
 import { v4 } from "uuid";
+import { TokenGetter, getTokenHeader } from "../authorization";
+import { ApiURL, ApiVersion } from "./constants";
 
 type apiType = "agent" | "customer" | "configuration";
 
@@ -49,10 +49,10 @@ export class WebAPI {
     const url = ["https:/", this.APIURL, `v${this.version}`, this.type, "action", action].join("/");
     const token = this.tokenGetter();
     const method = this.actionsMethodGet.indexOf(action) >= 0 ? "GET" : "POST";
-
+    
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token.accessToken}`,
+      Authorization: getTokenHeader(token),
       "X-Region": token.region,
     };
     if (typeof window === "undefined") {
